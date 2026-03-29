@@ -1,1520 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tyler | Networking, Cloud & Cyber</title>
-
-    <style>
-        :root {
-            --bg: #020617;
-            --bg-panel: #0b1220;
-            --bg-card: #020617;
-            --border: rgba(148,163,184,0.35);
-            --text-main: #e5e7eb;
-            --text-muted: #9ca3af;
-            --accent: #3b82f6;
-            --accent-soft: rgba(59,130,246,0.18);
-            --radius-lg: 18px;
-            --radius-md: 12px;
-            --shadow: 0 18px 40px rgba(15,23,42,0.8);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Inter, system-ui, sans-serif;
-            background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%);
-            color: var(--text-main);
-            -webkit-font-smoothing: antialiased;
-            display: flex;
-        }
-
-        a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 230px;
-            background: #020617;
-            border-right: 1px solid rgba(15,23,42,0.9);
-            padding: 14px 12px 16px;
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-        }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 8px 14px;
-            border-bottom: 1px solid rgba(15,23,42,0.9);
-            margin-bottom: 10px;
-        }
-
-        .sidebar-mark {
-            width: 30px;
-            height: 30px;
-            border-radius: 999px;
-            background: radial-gradient(circle at 30% 20%, #60a5fa, #1d4ed8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 0 0 1px rgba(148,163,184,0.5);
-        }
-
-        .sidebar-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .sidebar-subtitle {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .sidebar-section-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #6b7280;
-            padding: 8px 8px 4px;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 4px 4px 10px;
-        }
-
-        .sidebar-link {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 7px 8px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            border: 1px solid transparent;
-            text-align: center;
-        }
-
-        .sidebar-link span.icon {
-            width: 18px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-link:hover {
-            background: #020617;
-            border-color: rgba(148,163,184,0.5);
-            color: var(--text-main);
-        }
-
-        .sidebar-link.active {
-            background: rgba(37,99,235,0.12);
-            border-color: var(--accent);
-            color: var(--text-main);
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding: 8px 8px 4px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(15,23,42,0.9);
-        }
-
-        .sidebar-status {
-            margin-top: 6px;
-        }
-
-        .sidebar-status-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 3px;
-        }
-
-        .status-dot-small {
-            width: 7px;
-            height: 7px;
-            border-radius: 999px;
-            background: #22c55e;
-        }
-
-        /* MAIN WRAPPER */
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* TOP NAV (inside main) */
-        nav {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 14px 24px 10px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: rgba(2,6,23,0.9);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(15,23,42,0.9);
-        }
-
-        .nav-links a {
-            margin-left: 18px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-
-        /* HERO */
-        .hero {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 32px 24px 60px;
-            display: grid;
-            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-            gap: 40px;
-            align-items: center;
-        }
-
-        @media (max-width: 900px) {
-            body {
-                display: block;
-            }
-            .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                flex-direction: row;
-                overflow-x: auto;
-            }
-            .main-wrapper {
-                width: 100%;
-            }
-            .hero {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .hero-left {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: rgba(15,23,42,0.9);
-            border: 1px solid rgba(148,163,184,0.4);
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-bottom: 14px;
-        }
-
-        .hero-tag-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 999px;
-            background: #22c55e;
-            box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
-        }
-
-        .hero h1 {
-            font-size: clamp(2.4rem, 4vw, 3.4rem);
-            margin: 0 0 12px;
-            line-height: 1.1;
-            letter-spacing: -1px;
-        }
-
-        .hero h1 span {
-            color: var(--accent);
-        }
-
-        .hero-subtitle {
-            font-size: 0.98rem;
-            color: var(--text-muted);
-            max-width: 520px;
-            margin-bottom: 22px;
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .btn {
-            padding: 10px 18px;
-            border-radius: 999px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #1d4ed8);
-            color: white;
-            box-shadow: 0 12px 30px rgba(37,99,235,0.45);
-        }
-
-        .btn-primary:hover {
-            filter: brightness(1.05);
-        }
-
-        .btn-ghost {
-            background: rgba(15,23,42,0.9);
-            border: 1px solid rgba(148,163,184,0.5);
-            color: var(--text-main);
-        }
-
-        .btn-ghost:hover {
-            border-color: var(--accent);
-        }
-
-        .hero-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .hero-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .hero-meta-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 999px;
-            background: rgba(148,163,184,0.7);
-        }
-
-        .hero-bg {
-            position: absolute;
-            inset: -80px -120px auto auto;
-            background: radial-gradient(circle at 30% 20%, rgba(59,130,246,0.35), transparent 60%);
-            opacity: 0.9;
-            filter: blur(2px);
-            animation: heroGlow 14s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-
-        @keyframes heroGlow {
-            0% { transform: translate3d(0,0,0) scale(1); opacity: 0.7; }
-            50% { transform: translate3d(-20px,10px,0) scale(1.1); opacity: 1; }
-            100% { transform: translate3d(10px,-10px,0) scale(1.05); opacity: 0.8; }
-        }
-
-        .hero-right {
-            position: relative;
-        }
-
-        .hero-panel {
-            background: var(--bg-panel);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            padding: 20px 20px 18px;
-            box-shadow: var(--shadow);
-        }
-
-        .hero-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .hero-panel-pill {
-            padding: 4px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(148,163,184,0.5);
-            background: rgba(15,23,42,0.9);
-        }
-
-        .hero-panel-main {
-            margin-bottom: 14px;
-        }
-
-        .hero-panel-main h3 {
-            margin: 0 0 6px;
-            font-size: 1rem;
-        }
-
-        .hero-panel-main p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0,1fr));
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .metric {
-            background: rgba(15,23,42,0.9);
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(148,163,184,0.45);
-            padding: 9px 10px 8px;
-            font-size: 0.8rem;
-        }
-
-        .metric-label {
-            color: var(--text-muted);
-            margin-bottom: 3px;
-        }
-
-        .metric-value {
-            font-weight: 500;
-        }
-
-        .hero-panel-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 999px;
-            background: #22c55e;
-        }
-
-        /* MAIN GRID */
-        .main {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 10px 24px 40px;
-            display: grid;
-            grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.6fr);
-            gap: 26px;
-        }
-
-        @media (max-width: 900px) {
-            .main {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--bg-panel);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            padding: 20px 20px 18px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-
-        .card h2 {
-            margin: 0 0 10px;
-            font-size: 1.1rem;
-        }
-
-        .card p {
-            margin: 0 0 10px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        /* LANDING SCREEN */
-        #landing-screen {
-            position: fixed;
-            inset: 0;
-            background: #0b1220;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5000;
-            opacity: 1;
-            transition: opacity 0.6s ease;
-        }
-
-        #logs-panel {
-            width: 600px;
-            max-width: 90%;
-            background: #020617;
-            border: 1px solid rgba(148,163,184,0.35);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            font-family: "JetBrains Mono", monospace;
-            color: #e5e7eb;
-        }
-
-        #logs-output {
-            height: 260px;
-            overflow-y: hidden;
-            white-space: pre-wrap;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin-bottom: 20px;
-        }
-
-        .log-line {
-            opacity: 0;
-            transform: translateY(4px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .log-line.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        #enter-dashboard-btn {
-            display: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(59,130,246,0.4);
-            background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(37,99,235,0.15));
-            color: #e5e7eb;
-            font-size: 0.92rem;
-            cursor: pointer;
-            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        #enter-dashboard-btn:hover {
-            background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(37,99,235,0.25));
-            border-color: #3b82f6;
-            box-shadow: 0 0 12px rgba(37,99,235,0.45);
-        }
-
-        #skip-intro {
-            position: absolute;
-            top: 20px;
-            right: 24px;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s ease;
-        }
-
-        #skip-intro:hover {
-            opacity: 1;
-            color: #cbd5e1;
-        }
-
-        /* SERVICE CARDS */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
-            margin-top: 6px;
-        }
-
-        .service {
-            background: #020617;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(148,163,184,0.45);
-            padding: 10px 10px 9px;
-            font-size: 0.85rem;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-        }
-
-        .service:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 30px rgba(15,23,42,0.9);
-            border-color: var(--accent);
-        }
-
-        .service-title {
-            font-weight: 500;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .service-icon {
-            font-size: 0.9rem;
-            color: var(--accent);
-        }
-
-        .service-sub {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        .service-tag {
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            font-size: 0.7rem;
-            padding: 2px 7px;
-            border-radius: 999px;
-            background: rgba(15,23,42,0.9);
-            border: 1px solid rgba(148,163,184,0.5);
-            color: var(--text-muted);
-        }
-
-        /* PROJECTS */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
-        .project {
-            background: #020617;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(148,163,184,0.45);
-            padding: 10px 10px 9px;
-            font-size: 0.86rem;
-        }
-
-        .project-title {
-            font-weight: 500;
-            margin-bottom: 3px;
-        }
-
-        .project-meta {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        /* EDITOR */
-        .editor {
-            background: #020617;
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(148,163,184,0.45);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
-            font-size: 0.8rem;
-        }
-
-        .editor-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 10px;
-            background: #020617;
-            border-bottom: 1px solid rgba(15,23,42,0.9);
-        }
-
-        .editor-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-        }
-
-        .dot.red { background: #ef4444; }
-        .dot.amber { background: #f59e0b; }
-        .dot.green { background: #22c55e; }
-
-        .editor-title {
-            color: var(--text-muted);
-        }
-
-        .editor-body {
-            padding: 10px 12px 12px;
-            background: #020617;
-        }
-
-        .code-line {
-            display: flex;
-            gap: 10px;
-        }
-
-        .code-line-num {
-            width: 24px;
-            text-align: right;
-            color: #4b5563;
-        }
-
-        .code-line-text {
-            white-space: pre-wrap;
-        }
-
-        .kw { color: #60a5fa; }
-        .str { color: #a855f7; }
-        .prop { color: #facc15; }
-        .comment { color: #6b7280; font-style: italic; }
-
-        /* CONTACT */
-        .contact-row {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 6px;
-            margin-top: 6px;
-            font-size: 0.86rem;
-        }
-
-        .contact-row span {
-            color: var(--text-muted);
-        }
-
-        footer {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 18px 24px 26px;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-            border-top: 1px solid rgba(15,23,42,0.9);
-        }
-
-        /* Fade-in */
-        .fade {
-            opacity: 0;
-            transform: translateY(8px);
-            animation: fadeInUp 0.7s ease forwards;
-        }
-
-        .fade-delay-1 { animation-delay: 0.1s; }
-        .fade-delay-2 { animation-delay: 0.2s; }
-        .fade-delay-3 { animation-delay: 0.3s; }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Cursor for editor */
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 14px;
-            background: #e5e7eb;
-            margin-left: 2px;
-            animation: blink 0.9s steps(1) infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tyler | Networking • Cloud • Cyber</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-<!-- SYSTEM LOGS LANDING SCREEN -->
-<div id="landing-screen">
-    <div id="logs-panel">
-        <div id="logs-output"></div>
-        <button id="enter-dashboard-btn">Enter Dashboard</button>
-        <div id="skip-intro">Skip intro</div>
+<body class="bg-black text-white font-mono">
+  <!-- Terminal Intro Animation -->
+  <div id="terminal-intro" class="fixed inset-0 bg-black z-50 flex items-center justify-center">
+    <div class="w-full max-w-2xl px-8">
+      <div class="text-green-400 mb-8 font-mono text-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-cyan-400">tyler@portfolio</span>
+          <span class="text-gray-600">:</span>
+          <span class="text-blue-400">~</span>
+          <span class="text-gray-600">$</span>
+          <span id="command-line" class="ml-2"></span>
+          <span id="cursor" class="w-2 h-5 bg-white animate-pulse ml-1"></span>
+        </div>
+      </div>
+      <div id="terminal-output" class="text-gray-300 text-sm space-y-2 min-h-32">
+        <!-- Terminal output will be injected here -->
+      </div>
+      <button id="skip-intro" class="mt-8 px-4 py-2 border border-gray-600 hover:border-white text-gray-400 hover:text-white transition text-sm">
+        Skip → 
+      </button>
     </div>
-</div>
+  </div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-mark">T</div>
-        <div>
-            <div class="sidebar-title">Tyler</div>
-            <div class="sidebar-subtitle">Networking • Cloud • Cyber</div>
+  <!-- Main Content (hidden until animation completes) -->
+  <div id="main-content" class="opacity-0 transition-opacity duration-1000">
+    <!-- Header/Nav -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-black/80 backdrop-blur border-b border-gray-800">
+      <nav class="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
+        <div class="text-xl font-bold">
+          <span class="text-cyan-400">tyler</span><span class="text-gray-600">@</span><span class="text-blue-400">portfolio</span>
         </div>
-    </div>
-
-    <div class="sidebar-section-label">Navigation</div>
-    <nav class="sidebar-nav">
-        <a class="sidebar-link active" href="#top">
-            <span>Overview</span>
-        </a>
-        <a class="sidebar-link" href="#services">
-            <span>Capabilities</span>
-        </a>
-        <a class="sidebar-link" href="#projects">
-            <span>Projects</span>
-        </a>
-        <a class="sidebar-link" href="#skills">
-            <span>Skills</span>
-        </a>
-        <a class="sidebar-link" href="#editor-section">
-            <span>Profile config</span>
-        </a>
-        <a class="sidebar-link" href="#contact">
-            <span>Contact</span>
-        </a>
-    </nav>
-
-    <div class="sidebar-footer">
-        <div>System status</div>
-        <div class="sidebar-status">
-            <div class="sidebar-status-item">
-                <span class="status-dot-small"></span>
-                <span>Portfolio: Online</span>
-            </div>
-            <div class="sidebar-status-item">
-                <span class="status-dot-small"></span>
-                <span>GitHub Pages: Healthy</span>
-            </div>
-            <div class="sidebar-status-item">
-                <span class="status-dot-small"></span>
-                <span>Email: Active</span>
-            </div>
+        <div class="flex gap-6 text-sm">
+          <a href="#about" class="hover:text-cyan-400 transition">about</a>
+          <a href="#projects" class="hover:text-cyan-400 transition">projects</a>
+          <a href="#skills" class="hover:text-cyan-400 transition">skills</a>
+          <a href="#contact" class="hover:text-cyan-400 transition">contact</a>
         </div>
-    </div>
-</aside>
-
-<!-- MAIN CONTENT WRAPPER -->
-<div class="main-wrapper" id="top">
-
-    <header class="hero fade fade-delay-2">
-        <div class="hero-left">
-            <div class="hero-bg"></div>
-
-            <div class="hero-tag">
-                <span class="hero-tag-dot"></span>
-                Open to junior roles in networking, cloud & cyber security
-            </div>
-
-            <h1><span>Networking, cloud and cyber</span> - built from the ground up.</h1>
-
-            <p class="hero-subtitle">
-                Former Army, now focused on networking, cloud and cyber security. I bring hands-on troubleshooting,
-                calm under pressure and a mission-focused mindset to modern IT environments.
-            </p>
-
-            <div class="hero-actions">
-                <button class="btn btn-primary" onclick="window.location.href='#projects'">View projects</button>
-                <button class="btn btn-ghost" onclick="window.location.href='#contact'">Download CV (PDF)</button>
-            </div>
-
-            <div class="hero-meta">
-                <span><span class="hero-meta-dot"></span> Transitioning from Army → IT</span>
-                <span><span class="hero-meta-dot"></span> Working toward CCNA, AWS, Security+</span>
-            </div>
-        </div>
-
-        <div class="hero-right">
-            <div class="hero-panel">
-                <div class="hero-panel-header">
-                    <span>Profile snapshot</span>
-                    <span class="hero-panel-pill">Hands-on • Reliable • Calm under pressure</span>
-                </div>
-                <div class="hero-panel-main">
-                    <h3>IT professional in transition</h3>
-                    <p>
-                        Currently building a strong foundation in networking, cloud and cyber security,
-                        with a focus on practical skills, lab work and real-world deployments.
-                    </p>
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric">
-                        <div class="metric-label">Focus areas</div>
-                        <div class="metric-value">Networking, Cloud, Cyber</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-label">Certs in progress</div>
-                        <div class="metric-value">CCNA • AWS • Security+</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-label">Background</div>
-                        <div class="metric-value">Army → IT</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-label">Location</div>
-                        <div class="metric-value">UK (South West)</div>
-                    </div>
-                </div>
-                <div class="hero-panel-footer">
-                    <span><span class="status-dot"></span> Actively seeking junior / entry-level roles</span>
-                    <span>Remote & hybrid considered</span>
-                </div>
-            </div>
-        </div>
+      </nav>
     </header>
 
-    <main class="main fade fade-delay-3">
-        <!-- LEFT COLUMN -->
-        <div>
-            <section class="card" id="services">
-                <h2>Capabilities</h2>
-                <p>
-                    The areas I’m actively developing and applying through labs, study and real-world scenarios.
-                </p>
-                <div class="services-grid">
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Networking
-                        </div>
-                        <div class="service-sub">Routing, VLANs, subnets, troubleshooting (CCNA track).</div>
-                        <div class="service-tag">Core</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Cloud (AWS)
-                        </div>
-                        <div class="service-sub">VPCs, IAM, EC2, S3, secure defaults and least privilege.</div>
-                        <div class="service-tag">Active</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Cyber Security
-                        </div>
-                        <div class="service-sub">Log analysis, basic incident response, security mindset.</div>
-                        <div class="service-tag">Growing</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Systems
-                        </div>
-                        <div class="service-sub">Linux, Windows, AD basics, virtualisation and lab building.</div>
-                        <div class="service-tag">Practical</div>
-                    </div>
-                </div>
-            </section>
-            <section id="metrics" class="card fade fade-delay-2" style="margin-bottom: 26px;">
-            <h2>Metrics Dashboard</h2>
-            <p>Live snapshot of my learning progress, lab work and technical development.</p>
+    <!-- Hero Section -->
+    <section class="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-32 px-8 flex items-center justify-center">
+      <div class="max-w-3xl w-full animate-fade-in">
+        <div class="mb-12">
+          <h1 class="text-5xl font-bold mb-2">Tyler Sanderson</h1>
+          <p class="text-xl text-cyan-400 mb-6">Networking • Cloud • Cyber Engineer</p>
+          <p class="text-gray-400 leading-relaxed mb-4">
+            Former Army IT professional transitioning to cloud and cybersecurity. 9 years of discipline, 
+            hands-on problem-solving, and mission-focused execution. Now building expertise in AWS, networking, 
+            and security through structured study and real-world labs.
+          </p>
+          <p class="text-gray-400 leading-relaxed">
+            UK-based, seeking junior infrastructure/cloud roles. Actively pursuing: CCNA, AWS Cloud Practitioner, Security+
+          </p>
+        </div>
+        <div class="flex gap-4">
+          <a href="#contact" class="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 transition rounded text-sm font-semibold">
+            Get in Touch
+          </a>
+          <a href="https://github.com/T-SandersonDigital" target="_blank" class="px-6 py-3 border border-gray-600 hover:border-white transition rounded text-sm">
+            GitHub →
+          </a>
+        </div>
+      </div>
+    </section>
 
-            <div class="metrics-dashboard">
-                
-                <!-- Metric 1 -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <span class="metric-title">Certifications Progress</span>
-                        <span class="metric-status active">Active</span>
-                    </div>
-                    <div class="metric-value" data-target="68">0%</div>
-                    <div class="metric-sparkline">
-                        <svg viewBox="0 0 100 30">
-                            <polyline 
-                                fill="none" 
-                                stroke="#3b82f6" 
-                                stroke-width="2"
-                                points="0,25 20,20 40,18 60,12 80,10 100,6" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Metric 2 -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <span class="metric-title">Labs Completed</span>
-                        <span class="metric-status stable">Stable</span>
-                    </div>
-                    <div class="metric-value" data-target="42">0</div>
-                    <div class="metric-sparkline">
-                        <svg viewBox="0 0 100 30">
-                            <polyline 
-                                fill="none" 
-                                stroke="#22c55e" 
-                                stroke-width="2"
-                                points="0,22 20,18 40,16 60,14 80,12 100,10" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Metric 3 -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <span class="metric-title">Hours Studied (Monthly)</span>
-                        <span class="metric-status warning">Rising</span>
-                    </div>
-                    <div class="metric-value" data-target="37">0</div>
-                    <div class="metric-sparkline">
-                        <svg viewBox="0 0 100 30">
-                            <polyline 
-                                fill="none" 
-                                stroke="#f59e0b" 
-                                stroke-width="2"
-                                points="0,26 20,24 40,20 60,18 80,14 100,12" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Metric 4 -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <span class="metric-title">Projects Completed</span>
-                        <span class="metric-status active">Active</span>
-                    </div>
-                    <div class="metric-value" data-target="12">0</div>
-                    <div class="metric-sparkline">
-                        <svg viewBox="0 0 100 30">
-                            <polyline 
-                                fill="none" 
-                                stroke="#a855f7" 
-                                stroke-width="2"
-                                points="0,28 20,26 40,22 60,18 80,16 100,14" />
-                        </svg>
-                    </div>
-                </div>
-
+    <!-- About Section -->
+    <section id="about" class="bg-black py-24 px-8 border-t border-gray-800">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8">
+          <span class="text-green-400">$</span> whoami
+        </h2>
+        <div class="prose prose-invert max-w-none text-gray-300 space-y-4">
+          <p>
+            I'm Tyler — an ambitious IT professional in transition from 9 years of military service. 
+            I bring discipline, problem-solving under pressure, and a mission-focused mindset to engineering.
+          </p>
+          <p>
+            Currently building strong foundations in networking, cloud (AWS) and cyber security. 
+            I believe in learning by doing: structured study + hands-on labs = real expertise.
+          </p>
+          <div class="mt-8 pt-8 border-t border-gray-700">
+            <h3 class="text-cyan-400 font-semibold mb-4">Quick Facts</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span class="text-yellow-500">certifications</span> → CCNA, AWS, Security+ (in progress)
+              </div>
+              <div>
+                <span class="text-yellow-500">languages</span> → Bash, PowerShell, Terraform, Python
+              </div>
+              <div>
+                <span class="text-yellow-500">platforms</span> → Linux, Windows, AWS, GCP
+              </div>
+              <div>
+                <span class="text-yellow-500">status</span> → 🟢 Actively Seeking
+              </div>
             </div>
-            </section>
-            <section id="timeline" class="card fade fade-delay-2" style="margin-bottom: 26px;">
-                <h2>Roadmap & Timeline</h2>
-                <p>A structured view of my journey, progression and future goals — inspired by Azure DevOps pipelines.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-                <div class="timeline-container">
+    <!-- Projects Section -->
+    <section id="projects" class="bg-gradient-to-b from-black to-gray-900 py-24 px-8 border-t border-gray-800">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-3xl font-bold mb-4">
+          <span class="text-green-400">$</span> ls -la projects/
+        </h2>
+        <p class="text-gray-400 mb-12">Personal infrastructure and security projects</p>
 
-                    <!-- ITEM 1 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Army Service → Transition</div>
-                            <div class="timeline-date">2017 – 2026</div>
-                            <div class="timeline-desc">
-                                Built discipline, leadership, operational clarity and calm under pressure — the foundation for my transition into IT.
-                            </div>
-                        </div>
-                    </div>
+        <div class="grid gap-6">
+          <!-- Project 1 -->
+          <div class="group border border-gray-700 hover:border-cyan-500 bg-gray-900/30 hover:bg-gray-900/60 transition rounded-lg p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-lg font-semibold text-cyan-400">Home Networking Lab</h3>
+              <span class="text-xs px-3 py-1 bg-green-900/40 text-green-400 rounded">Ongoing</span>
+            </div>
+            <p class="text-gray-400 mb-4 text-sm">
+              Enterprise-grade networking setup using Cisco IOS and GNS3. Covers routing protocols, 
+              VLAN segmentation, subnetting, and network design patterns.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">Cisco IOS</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">GNS3</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">Networking</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">CCNA</span>
+            </div>
+          </div>
 
-                    <!-- ITEM 2 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">IT Foundations & Home Lab</div>
-                            <div class="timeline-date">2026 – Present</div>
-                            <div class="timeline-desc">
-                                Networking, Linux, Windows Server, virtualisation, lab building and hands‑on troubleshooting.
-                            </div>
-                        </div>
-                    </div>
+          <!-- Project 2 -->
+          <div class="group border border-gray-700 hover:border-cyan-500 bg-gray-900/30 hover:bg-gray-900/60 transition rounded-lg p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-lg font-semibold text-cyan-400">AWS Fundamentals Lab</h3>
+              <span class="text-xs px-3 py-1 bg-yellow-900/40 text-yellow-400 rounded">In Progress</span>
+            </div>
+            <p class="text-gray-400 mb-4 text-sm">
+              Production-ready AWS infrastructure with VPC, IAM policies, EC2 instances, and S3 storage. 
+              Infrastructure as Code using Terraform for repeatability and version control.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">AWS</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">Terraform</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">IaC</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">Cloud</span>
+            </div>
+          </div>
 
-                    <!-- ITEM 3 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Certifications in Progress</div>
-                            <div class="timeline-date">2026 – 2027</div>
-                            <div class="timeline-desc">
-                                CCNA, AWS Cloud Practitioner and Security+ — building a strong technical baseline across networking, cloud and cyber.
-                            </div>
-                        </div>
-                    </div>
+          <!-- Project 3 -->
+          <div class="group border border-gray-700 hover:border-cyan-500 bg-gray-900/30 hover:bg-gray-900/60 transition rounded-lg p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-lg font-semibold text-cyan-400">Cyber Forensics Practice</h3>
+              <span class="text-xs px-3 py-1 bg-green-900/40 text-green-400 rounded">Ongoing</span>
+            </div>
+            <p class="text-gray-400 mb-4 text-sm">
+              Hands-on incident response and digital forensics. Log analysis with ELK Stack, SIEM configuration, 
+              threat hunting, and forensic investigation techniques.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">Forensics</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">ELK Stack</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">SIEM</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">Security</span>
+            </div>
+          </div>
 
-                    <!-- ITEM 4 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Cloud & Cyber Projects</div>
-                            <div class="timeline-date">2027</div>
-                            <div class="timeline-desc">
-                                AWS VPC builds, IAM least‑privilege design, S3 hosting, log analysis, incident response practice and forensic workflows.
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ITEM 5 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Junior IT / Cloud / Cyber Role</div>
-                            <div class="timeline-date">2027 →</div>
-                            <div class="timeline-desc">
-                                Actively seeking a role to apply my skills, grow within a team and contribute to secure, reliable infrastructure.
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ITEM 6 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker future"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Future Goals</div>
-                            <div class="timeline-date">2028 →</div>
-                            <div class="timeline-desc">
-                                Azure certifications, deeper cloud security, automation (PowerShell/Bash), and expanding my home lab into a full enterprise simulation.
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <style>
-                .timeline-container {
-                    position: relative;
-                    margin-top: 20px;
-                    padding-left: 20px;
-                    border-left: 2px solid rgba(148,163,184,0.25);
-                }
-
-                .timeline-item {
-                    position: relative;
-                    margin-bottom: 26px;
-                    padding-left: 20px;
-                }
-
-                .timeline-marker {
-                    position: absolute;
-                    left: -11px;
-                    top: 4px;
-                    width: 14px;
-                    height: 14px;
-                    border-radius: 50%;
-                    background: #3b82f6;
-                    border: 2px solid rgba(148,163,184,0.4);
-                    box-shadow: 0 0 10px rgba(59,130,246,0.6);
-                }
-
-                .timeline-marker.future {
-                    background: #a855f7;
-                    box-shadow: 0 0 10px rgba(168,85,247,0.6);
-                }
-
-                .timeline-content {
-                    background: #020617;
-                    border: 1px solid rgba(148,163,184,0.35);
-                    border-radius: 12px;
-                    padding: 12px 16px;
-                    box-shadow: 0 10px 20px rgba(15,23,42,0.4);
-                    transition: transform 0.2s ease, border-color 0.2s ease;
-                }
-
-                .timeline-content:hover {
-                    transform: translateY(-3px);
-                    border-color: var(--accent);
-                }
-
-                .timeline-title {
-                    font-size: 1rem;
-                    font-weight: 600;
-                    margin-bottom: 4px;
-                }
-
-                .timeline-date {
-                    font-size: 0.8rem;
-                    color: var(--text-muted);
-                    margin-bottom: 6px;
-                }
-
-                .timeline-desc {
-                    font-size: 0.85rem;
-                    color: var(--text-muted);
-                    line-height: 1.4;
-                }
-            </style>
-        <style>
-            .metrics-dashboard {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                gap: 16px;
-                margin-top: 14px;
-            }
-
-            .metric-card {
-                background: #020617;
-                border: 1px solid rgba(148,163,184,0.45);
-                border-radius: 14px;
-                padding: 14px 16px;
-                box-shadow: 0 10px 20px rgba(15,23,42,0.4);
-                transition: transform 0.2s ease, border-color 0.2s ease;
-            }
-
-            .metric-card:hover {
-                transform: translateY(-4px);
-                border-color: var(--accent);
-            }
-
-            .metric-header {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 6px;
-                font-size: 0.85rem;
-            }
-
-            .metric-title {
-                color: var(--text-main);
-            }
-
-            .metric-status {
-                padding: 2px 8px;
-                border-radius: 999px;
-                font-size: 0.7rem;
-                border: 1px solid rgba(148,163,184,0.4);
-            }
-
-            .metric-status.active {
-                color: #3b82f6;
-                border-color: #3b82f6;
-            }
-
-            .metric-status.stable {
-                color: #22c55e;
-                border-color: #22c55e;
-            }
-
-            .metric-status.warning {
-                color: #f59e0b;
-                border-color: #f59e0b;
-            }
-
-            .metric-value {
-                font-size: 1.6rem;
-                font-weight: 600;
-                margin-bottom: 6px;
-            }
-
-            .metric-sparkline svg {
-                width: 100%;
-                height: 30px;
-                opacity: 0.8;
-            }
-        </style>
-
-        <script>
-            // Counter animation
-            const counters = document.querySelectorAll('.metric-value');
-
-            counters.forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                let current = 0;
-
-                function update() {
-                    current += target / 60;
-                    if (current < target) {
-                        counter.textContent = Math.floor(current);
-                        requestAnimationFrame(update);
-                    } else {
-                        counter.textContent = target + (counter.textContent.includes('%') ? '%' : '');
-                    }
-                }
-
-                update();
-            });
-        </script>
-            <section class="card" id="projects">
-                <h2>Highlighted projects</h2>
-                <p>
-                    A selection of practical work that reflects how I learn: hands-on, structured and focused
-                    on building reliable, secure systems.
-                </p>
-                <div class="projects-grid">
-                    <article class="project">
-                        <div class="project-title">Home networking & CCNA lab</div>
-                        <div class="project-meta">
-                            Virtualised lab with routing, VLANs, subnets and troubleshooting scenarios to mirror
-                            real-world network environments.
-                        </div>
-                    </article>
-                    <article class="project">
-                        <div class="project-title">AWS fundamentals lab</div>
-                        <div class="project-meta">
-                            VPC design, IAM policies, EC2 instances and S3 static hosting, with a focus on secure defaults
-                            and least privilege.
-                        </div>
-                    </article>
-                    <article class="project">
-                        <div class="project-title">Cyber & forensics practice</div>
-                        <div class="project-meta">
-                            Exercises in log analysis, basic incident response, and forensic workflows from my
-                            computer forensics studies.
-                        </div>
-                    </article>
-                    <article class="project">
-                        <div class="project-title">Portfolio & domain infrastructure</div>
-                        <div class="project-meta">
-                            Custom domain, GitHub Pages deployment and Microsoft 365 integration for professional email
-                            and identity.
-                        </div>
-                    </article>
-                </div>
-            </section>
+          <!-- Project 4 -->
+          <div class="group border border-gray-700 hover:border-cyan-500 bg-gray-900/30 hover:bg-gray-900/60 transition rounded-lg p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-lg font-semibold text-cyan-400">Portfolio Infrastructure</h3>
+              <span class="text-xs px-3 py-1 bg-green-900/40 text-green-400 rounded">Live</span>
+            </div>
+            <p class="text-gray-400 mb-4 text-sm">
+              This website! Deployed with GitHub Pages, custom domain DNS configuration, 
+              and modern web standards. Clean, minimalist design with animations.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">HTML/CSS</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">GitHub Pages</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">DNS</span>
+              <span class="px-3 py-1 bg-gray-800 hover:bg-gray-700 transition text-gray-300 rounded text-xs">Web</span>
+            </div>
+          </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div>
-            <section class="card" id="skills">
-                <h2>Skills & tools</h2>
-                <p>
-                    A snapshot of the areas I’m actively working with and building deeper expertise in.
-                </p>
-                <div class="services-grid">
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Networking (CCNA)
-                        </div>
-                        <div class="service-sub">Subnets, routing, switching, VLANs, troubleshooting.</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>AWS fundamentals
-                        </div>
-                        <div class="service-sub">VPC, IAM, EC2, S3, security groups.</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Cyber basics
-                        </div>
-                        <div class="service-sub">Threat awareness, logs, basic detection.</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Linux & CLI
-                        </div>
-                        <div class="service-sub">Shell, permissions, services, tooling.</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Windows & AD basics
-                        </div>
-                        <div class="service-sub">Users, groups, basic policies.</div>
-                    </div>
-                    <div class="service">
-                        <div class="service-title">
-                            <span class="service-icon"></span>Virtualisation / labs
-                        </div>
-                        <div class="service-sub">Hypervisors, snapshots, lab design.</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- VS CODE STYLE EDITOR -->
-            <section id="editor-section" style="margin-bottom: 32px;">
-                <div class="editor" style="height: 480px; position: relative; overflow: hidden;">
-                    <div class="editor-header">
-                        <div class="editor-dots">
-                            <div class="dot red"></div>
-                            <div class="dot amber"></div>
-                            <div class="dot green"></div>
-                        </div>
-                        <div class="editor-title">profile.yaml</div>
-                    </div>
-
-                    <div class="editor-body" id="typing-area"></div>
-                </div>
-
-                <script>
-                    const rawLines = [
-                        '# Tyler — networking, cloud & cyber in progress',
-                        'background: "Army → IT"',
-                        'location: "UK (South West)"',
-                        'focus_areas:',
-                        '  - "Networking (CCNA track)"',
-                        '  - "AWS fundamentals"',
-                        '  - "Cyber security basics"',
-                        'certifications_in_progress: ["CCNA", "AWS", "Security+"]',
-                        'technical_stack:',
-                        '  - "Linux (CLI-first mindset)"',
-                        '  - "Windows Server & AD basics"',
-                        '  - "Virtualisation (lab building)"',
-                        '  - "Scripting mindset (PowerShell/Bash)"',
-                        'approach:',
-                        '  - "Hands-on labs over theory alone"',
-                        '  - "Structured, repeatable troubleshooting"',
-                        '  - "Calm under pressure, mission-focused"',
-                        '  - "Document everything — clarity beats chaos"',
-                        'current_projects:',
-                        '  - "Home networking & CCNA lab"',
-                        '  - "AWS VPC + IAM secure-by-default build"',
-                        '  - "Cyber forensics practice"',
-                        'seeking: "Junior / entry-level role to grow and contribute"',
-                        'contact: "tyler@SandersonDigital.uk"'
-                    ];
-
-                    function highlightSyntax(text) {
-                        return text
-                            .replace(/^#.*$/, match => `<span class="comment">${match}</span>`)
-                            .replace(/^([a-zA-Z_]+)(:)/, (m, p1, p2) => `<span class="prop">${p1}</span>${p2}`)
-                            .replace(/"([^"]*)"/g, `<span class="str">"$1"</span>`)
-                            .replace(/\[(.*?)\]/g, `<span class="str">[$1]</span>`);
-                    }
-
-                    const typingArea = document.getElementById("typing-area");
-
-                    let lineIndex = 0;
-
-                    function typeLine() {
-                        if (lineIndex >= rawLines.length) return;
-
-                        const lineNumber = lineIndex + 1;
-                        const rawText = rawLines[lineIndex];
-
-                        const lineElement = document.createElement("div");
-                        lineElement.className = "code-line";
-
-                        const numElement = document.createElement("div");
-                        numElement.className = "code-line-num";
-                        numElement.textContent = lineNumber;
-
-                        const textElement = document.createElement("div");
-                        textElement.className = "code-line-text";
-                        textElement.textContent = "";
-
-                        const cursor = document.createElement("span");
-                        cursor.className = "cursor";
-
-                        textElement.appendChild(cursor);
-
-                        lineElement.appendChild(numElement);
-                        lineElement.appendChild(textElement);
-                        typingArea.appendChild(lineElement);
-
-                        let charIndex = 0;
-
-                        function typeChar() {
-                            if (charIndex < rawText.length) {
-                                textElement.innerHTML = rawText.substring(0, charIndex) + cursor.outerHTML;
-                                charIndex++;
-                                setTimeout(typeChar, 12);
-                            } else {
-                                textElement.innerHTML = highlightSyntax(rawText);
-                                lineIndex++;
-                                setTimeout(typeLine, 100);
-                            }
-                        }
-
-                        typeChar();
-                    }
-
-                    setTimeout(typeLine, 400);
-                </script>
-            </section>
-
-            <section class="card" id="contact">
-                <h2>Contact & links</h2>
-                <p>
-                    If you’d like to talk about a role, a project or just compare notes on labs and learning paths,
-                    I’d be happy to connect.
-                </p>
-                <div class="contact-row">
-                    <div>
-                        Email:
-                        <a href="mailto:tyler@SandersonDigital.uk">
-                            <span>tyler@SandersonDigital.uk</span>
-                        </a>
-                    </div>
-                    <div>
-                        GitHub:
-                        <a href="https://github.com/T-SandersonDigital" target="_blank" rel="noreferrer">
-                            <span>github.com/T-SandersonDigital</span>
-                        </a>
-                    </div>
-                    <div>
-                        LinkedIn:
-                        <a href="https://www.linkedin.com/in/tyler-sanderson-2ba8903b0/" target="_blank" rel="noreferrer">
-                            <span>linkedin.com/in/tyler-sanderson</span>
-                        </a>
-                    </div>
-                    <div>
-                        CV:
-                        <a href="cv.pdf" target="_blank" rel="noreferrer">
-                            <span>Download PDF</span>
-                        </a>
-                    </div>
-                </div>
-            </section>
+        <div class="mt-12 text-center">
+          <p class="text-gray-400 text-sm mb-4">More projects and experiments on GitHub</p>
+          <a href="https://github.com/T-SandersonDigital" target="_blank" class="inline-block px-6 py-3 border border-cyan-600 hover:bg-cyan-600/10 text-cyan-400 rounded transition">
+            Explore GitHub →
+          </a>
         </div>
-    </main>
+      </div>
+    </section>
 
-    <footer>
-        <span>© 2026 Tyler — Networking, Cloud & Cyber</span>
-        <span>Built with GitHub Pages & a custom domain</span>
+    <!-- Skills Section -->
+    <section id="skills" class="bg-black py-24 px-8 border-t border-gray-800">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8">
+          <span class="text-green-400">$</span> cat skills.txt
+        </h2>
+        
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-cyan-400 font-semibold mb-2">🌐 Networking</h3>
+            <p class="text-gray-400 text-sm">
+              Routing • Switching • VLANs • Subnetting • Cisco IOS • BGP • OSPF • Packet Tracer
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-cyan-400 font-semibold mb-2">☁️ Cloud (AWS)</h3>
+            <p class="text-gray-400 text-sm">
+              VPC • IAM • EC2 • S3 • RDS • Lambda • CloudFormation • Terraform • Cost Optimization
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-cyan-400 font-semibold mb-2">🔒 Cybersecurity</h3>
+            <p class="text-gray-400 text-sm">
+              Log Analysis • SIEM • Incident Response • Threat Hunting • Forensics • Vulnerability Assessment • Hardening
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-cyan-400 font-semibold mb-2">💻 Systems & Infrastructure</h3>
+            <p class="text-gray-400 text-sm">
+              Linux (Ubuntu, CentOS) • Windows Server • Active Directory • Docker • Virtualization • System Administration
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-cyan-400 font-semibold mb-2">🛠️ Tools & Languages</h3>
+            <p class="text-gray-400 text-sm">
+              Bash • PowerShell • Python • Terraform • Git • Ansible • Wireshark • ELK Stack • Splunk • GNS3
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-cyan-400 font-semibold mb-2">📚 Certifications (In Progress)</h3>
+            <div class="flex flex-wrap gap-3">
+              <span class="px-4 py-2 bg-blue-900/30 text-blue-400 rounded text-sm border border-blue-700">CCNA</span>
+              <span class="px-4 py-2 bg-orange-900/30 text-orange-400 rounded text-sm border border-orange-700">AWS Cloud Practitioner</span>
+              <span class="px-4 py-2 bg-red-900/30 text-red-400 rounded text-sm border border-red-700">Security+</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="bg-gradient-to-b from-black to-gray-900 py-24 px-8 border-t border-gray-800">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8">
+          <span class="text-green-400">$</span> contact
+        </h2>
+        
+        <div class="space-y-4 mb-12">
+          <div class="flex items-start gap-4">
+            <span class="text-yellow-500 font-semibold min-w-24">email</span>
+            <a href="mailto:tyler@SandersonDigital.uk" class="text-cyan-400 hover:text-cyan-300 break-all">
+              tyler@SandersonDigital.uk
+            </a>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="text-yellow-500 font-semibold min-w-24">github</span>
+            <a href="https://github.com/T-SandersonDigital" target="_blank" class="text-cyan-400 hover:text-cyan-300">
+              github.com/T-SandersonDigital →
+            </a>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="text-yellow-500 font-semibold min-w-24">linkedin</span>
+            <a href="https://www.linkedin.com/in/tyler-sanderson-2ba8903b0/" target="_blank" class="text-cyan-400 hover:text-cyan-300">
+              linkedin.com/in/tyler-sanderson →
+            </a>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="text-yellow-500 font-semibold min-w-24">cv</span>
+            <a href="cv.pdf" target="_blank" class="text-cyan-400 hover:text-cyan-300">
+              Download PDF →
+            </a>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="text-yellow-500 font-semibold min-w-24">location</span>
+            <span class="text-gray-400">UK (South West) — remote/hybrid welcome</span>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="text-yellow-500 font-semibold min-w-24">status</span>
+            <span class="text-green-400 font-semibold">🟢 Actively Seeking Junior Infrastructure Roles</span>
+          </div>
+        </div>
+
+        <div class="pt-8 border-t border-gray-700">
+          <p class="text-gray-500 text-sm">
+            Built with HTML, CSS, and Tailwind. No heavy frameworks—just clean, performant code.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800 py-8 px-8 text-center text-gray-600 text-sm">
+      <p>© 2026 Tyler Sanderson. All rights reserved.</p>
     </footer>
-</div>
+  </div>
 
-<script>
-    const logs = [
-        "[INFO]  Initialising portfolio services...",
-        "[INFO]  Loading core modules...",
-        "[OK]    Core modules loaded successfully",
-        "[INFO]  Performing sanity checks...",
-        "[OK]    Coffee level: insufficient",
-        "[OK]    Discombobulating",
-        "[OK]    Discombobulation: Negative",
-        "[INFO]  Optimising dashboard layout...",
-        "[OK]    UI components initialised",
-        "[INFO]  System ready."
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    /* Smooth prose styling */
+    .prose {
+      --tw-prose-body: rgb(209, 213, 219);
+      --tw-prose-headings: rgb(255, 255, 255);
+      --tw-prose-bold: rgb(255, 255, 255);
+      --tw-prose-links: rgb(34, 197, 94);
+    }
+  </style>
+
+  <script>
+    const terminalIntro = document.getElementById('terminal-intro');
+    const mainContent = document.getElementById('main-content');
+    const skipButton = document.getElementById('skip-intro');
+    const commandLine = document.getElementById('command-line');
+    const terminalOutput = document.getElementById('terminal-output');
+    const cursor = document.getElementById('cursor');
+
+    const commands = [
+      'npm run build',
+      'npm start',
+      'Loading portfolio...'
     ];
 
-    const logsOutput = document.getElementById("logs-output");
-    const landingScreen = document.getElementById("landing-screen");
-    const enterBtn = document.getElementById("enter-dashboard-btn");
-    const skipIntro = document.getElementById("skip-intro");
+    const outputs = [
+      '> Building optimized assets...',
+      '> Starting server on localhost:3000',
+      '> Portfolio ready. Welcome!'
+    ];
 
-    // If user has visited before, skip intro entirely
-    if (localStorage.getItem("skipIntro") === "true") {
-        landingScreen.style.display = "none";
-    } else {
-        startBootSequence();
-    }
+    let commandIndex = 0;
+    let charIndex = 0;
+    let currentOutput = '';
+    let isSkipped = false;
 
-    function startBootSequence() {
-        let index = 0;
+    function typeCommand() {
+      if (isSkipped) return;
 
-        function showNextLog() {
-            if (index >= logs.length) {
-                enterBtn.style.display = "block";
-                setTimeout(() => enterBtn.classList.add("visible"), 50);
-                return;
-            }
-
-            const line = document.createElement("div");
-            line.className = "log-line";
-            line.textContent = logs[index];
-            logsOutput.appendChild(line);
-
-            setTimeout(() => line.classList.add("visible"), 50);
-
-            index++;
-            setTimeout(showNextLog, 500);
+      if (commandIndex < commands.length) {
+        const command = commands[commandIndex];
+        
+        if (charIndex < command.length) {
+          commandLine.textContent += command[charIndex];
+          charIndex++;
+          setTimeout(typeCommand, 50);
+        } else {
+          // Command fully typed, show output
+          setTimeout(showOutput, 300);
         }
-
-        showNextLog();
+      }
     }
 
-    function closeIntro() {
-        landingScreen.style.opacity = "0";
-        localStorage.setItem("skipIntro", "true");
+    function showOutput() {
+      if (isSkipped) return;
+
+      const output = outputs[commandIndex];
+      currentOutput += output + '\n';
+      
+      terminalOutput.innerHTML = currentOutput.split('\n').map(line => 
+        line ? `<div class="text-gray-500">${line}</div>` : '<div></div>'
+      ).join('');
+
+      commandIndex++;
+      charIndex = 0;
+      commandLine.textContent = '';
+      
+      if (commandIndex < commands.length) {
         setTimeout(() => {
-            landingScreen.style.display = "none";
+          commandLine.textContent = '$ ';
+          setTimeout(typeCommand, 200);
         }, 600);
+      } else {
+        setTimeout(completeAnimation, 800);
+      }
     }
 
-    enterBtn.addEventListener("click", closeIntro);
-    skipIntro.addEventListener("click", closeIntro);
-</script>
+    function completeAnimation() {
+      cursor.style.display = 'none';
+      skipButton.style.display = 'none';
 
+      // Fade out terminal
+      terminalIntro.style.opacity = '0';
+      terminalIntro.style.transition = 'opacity 0.6s ease';
 
+      setTimeout(() => {
+        terminalIntro.style.display = 'none';
+        mainContent.classList.remove('opacity-0');
+      }, 600);
+    }
+
+    function skipAnimation() {
+      isSkipped = true;
+      cursor.style.display = 'none';
+      terminalIntro.style.pointerEvents = 'none';
+      mainContent.classList.remove('opacity-0');
+    }
+
+    skipButton.addEventListener('click', skipAnimation);
+
+    // Start typing
+    commandLine.textContent = '$ ';
+    setTimeout(typeCommand, 500);
+
+    // Smooth scroll for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
